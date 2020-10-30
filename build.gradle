@@ -63,8 +63,6 @@ dependencies {
     compileOnly group: 'io.vertx', name: 'vertx-codegen', version: "${vertx_version}"
     kapt("io.vertx:vertx-codegen:3.9.3:processor") // in plugin, include kapt, with this and codegen dependency to generate proxy class
 
-    // vertx grpc
-    implementation group: 'io.vertx', name: 'vertx-grpc', version: "$vertx_version"
 }
 
 mainClassName = "Main"

@@ -2,7 +2,6 @@ package config
 
 import io.vertx.core.DeploymentOptions
 import proxy.HealthService
-import service.verticles.GrpcServerVerticle
 import service.verticles.HealthServiceVerticle
 
 
@@ -21,15 +20,6 @@ abstract class ServiceConfig : ConfigNaming, VerticleConfig {
 
     fun eventBusTopic(): String {
         return "$prefix/$eventBusTopic"
-    }
-}
-
-object GrpcServerConfig : VerticleConfig {
-    override val deploymentOptions: DeploymentOptions by lazy {
-        DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors())
-    }
-    override val verticleCanonicalName: String by lazy {
-        GrpcServerVerticle::class.java.canonicalName
     }
 }
 

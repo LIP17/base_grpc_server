@@ -12,8 +12,6 @@ class HealthServiceVerticle: CoroutineVerticle() {
         val healthServiceImpl = HealthServiceFactory.createImpl()
         val binder = ServiceBinder(vertx)
 
-        println("healther service start ${Thread.currentThread().name}")
-
         binder.setAddress(HealthServiceConfig.eventBusTopic())
             .register(HealthService::class.java, healthServiceImpl)
     }

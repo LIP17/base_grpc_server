@@ -1,4 +1,4 @@
-package service.grpc
+package grpc
 
 import com.google.protobuf.BoolValue
 import lip17.base_grpc_service.BaseGrpcServiceCoroutineGrpc
@@ -12,8 +12,6 @@ class ServiceServer(
 ): BaseGrpcServiceCoroutineGrpc.BaseGrpcServiceImplBase() {
 
     override suspend fun healthStatus(request: HealthRequest): HealthResponse {
-        println("${ServiceServer::class.java}:${Thread.currentThread()}")
-
         val isHealthy = BoolValue.of(healthService.isAliveAwait())
         return HealthResponse.newBuilder().apply {
             this.pongMsg = request.pingMsg
