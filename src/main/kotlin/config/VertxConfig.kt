@@ -2,7 +2,6 @@ package config
 
 import io.vertx.core.DeploymentOptions
 import proxy.HealthService
-import service.verticles.HealthServiceVerticle
 
 
 interface ConfigNaming {
@@ -11,7 +10,6 @@ interface ConfigNaming {
 
 interface VerticleConfig {
     val deploymentOptions: DeploymentOptions
-    val verticleCanonicalName: String
 }
 
 abstract class ServiceConfig : ConfigNaming, VerticleConfig {
@@ -27,9 +25,5 @@ object HealthServiceConfig : ServiceConfig() {
     override val deploymentOptions: DeploymentOptions by lazy {
         DeploymentOptions().setInstances(2)
     }
-
     override val eventBusTopic: String = HealthService::class.java.simpleName
-    override val verticleCanonicalName: String by lazy {
-        HealthServiceVerticle::class.java.canonicalName
-    }
 }
