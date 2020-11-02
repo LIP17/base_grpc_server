@@ -1,43 +1,36 @@
+import com.google.inject.Guice
+import com.google.inject.Stage
 import config.HealthServiceConfig
-import io.grpc.netty.NettyServerBuilder
 import io.vertx.core.Vertx
 import io.vertx.kotlin.core.deployVerticleAwait
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import service.factory.HealthServiceFactory
-import grpc.ServiceServer
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
-
+import modules.MainModule
+import service.verticles.HealthServiceVerticle
 
 object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val vertx = Vertx.vertx()
+        val injector = Guice.createInjector(Stage.PRODUCTION, MainModule())
+        val vertx = injector.getInstance(Vertx::class.java)
 
+        val deployments: MutableSet<String> = mutableSetOf()
         GlobalScope.launch(vertx.dispatcher()) {
             vertx.deployVerticleAwait(
-                HealthServiceConfig.verticleCanonicalName,
+                { injector.getInstance(HealthServiceVerticle::class.java) },
                 HealthServiceConfig.deploymentOptions
-            )
+            ).also { deployments.add(it) }
         }
 
-        val serviceProxy = HealthServiceFactory.createProxy(vertx, HealthServiceConfig.eventBusTopic())
-
-        val grpcServer = NettyServerBuilder
-            .forPort(50000)
-            .executor(ThreadPoolExecutor(16, 32, 60, TimeUnit.SECONDS, LinkedBlockingQueue()))
-            .addService(ServiceServer(serviceProxy))
-            .build()
-
+        val grpcServer = injector.getInstance(GrpcServer::class.java)
         grpcServer.start()
         println("deploy finished")
 
         Runtime.getRuntime().addShutdownHook(object : Thread() {
             override fun run() {
+                grpcServer.stop()
                 vertx.close()
                 println("closed")
             }

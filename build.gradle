@@ -63,6 +63,8 @@ dependencies {
     compileOnly group: 'io.vertx', name: 'vertx-codegen', version: "${vertx_version}"
     kapt("io.vertx:vertx-codegen:3.9.3:processor") // in plugin, include kapt, with this and codegen dependency to generate proxy class
 
+    // guice
+    implementation group: 'com.google.inject', name: 'guice', version: '4.2.3'
 }
 
 mainClassName = "Main"

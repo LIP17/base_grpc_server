@@ -4,16 +4,20 @@ import config.HealthServiceConfig
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.serviceproxy.ServiceBinder
 import proxy.HealthService
-import service.factory.HealthServiceFactory
 
-class HealthServiceVerticle: CoroutineVerticle() {
+class HealthServiceVerticle(
+    private val healthService: HealthService
+): CoroutineVerticle() {
 
     override suspend fun start() {
-        val healthServiceImpl = HealthServiceFactory.createImpl()
         val binder = ServiceBinder(vertx)
 
         binder.setAddress(HealthServiceConfig.eventBusTopic())
-            .register(HealthService::class.java, healthServiceImpl)
+            .register(HealthService::class.java, healthService)
+    }
+
+    override suspend fun stop() {
+        println("$deploymentID stopped.")
     }
 
 }
